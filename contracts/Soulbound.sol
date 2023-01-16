@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.17;
 
 import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
@@ -18,6 +18,17 @@ contract SoulBound is ERC721, ERC721URIStorage, Ownable {
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);
+  }
+
+  function _beforeTokenTransfer(
+    address from,
+    address to,
+    uint256
+  ) internal pure override {
+    require(
+      from == address(0) || to == address(0),
+      'This a Soulbound token. It cannot be transferred. It can only be burned by the token owner.'
+    );
   }
 
   // The following functions are overrides required by Solidity.
