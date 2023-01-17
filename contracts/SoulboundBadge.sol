@@ -6,12 +6,12 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/utils/Counters.sol';
 
-contract SoulBound is ERC721, ERC721URIStorage, Ownable {
+contract SoulBoundBadge is ERC721, ERC721URIStorage, Ownable {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
 
-  constructor() ERC721('SoulBound', 'SBT') {}
+  constructor() ERC721('SoulBoundBadge', 'SBB') {}
 
   function safeMint(address to, string memory uri) public onlyOwner {
     uint256 tokenId = _tokenIdCounter.current();
@@ -23,12 +23,14 @@ contract SoulBound is ERC721, ERC721URIStorage, Ownable {
   function _beforeTokenTransfer(
     address from,
     address to,
-    uint256
-  ) internal pure override {
+    uint256 tokenId,
+    uint256 batchSize
+  ) internal override(ERC721) {
     require(
-      from == address(0) || to == address(0),
-      'This a Soulbound token. It cannot be transferred. It can only be burned by the token owner.'
+      (from == address(0) && to != address(0)) || (from != address(0) && to == address(0)),
+      'Transfer not allowed'
     );
+    super._beforeTokenTransfer(from, to, tokenId, batchSize);
   }
 
   // The following functions are overrides required by Solidity.
