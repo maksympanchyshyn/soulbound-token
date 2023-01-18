@@ -8,7 +8,7 @@ contract BadgeMinter is AccessControl {
   address public signer;
 
   constructor() {
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
   function setBadgeAddress(address _badgeAddress) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {

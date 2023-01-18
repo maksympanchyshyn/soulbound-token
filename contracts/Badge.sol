@@ -11,8 +11,7 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
   event BadgeClaimed(uint256 indexed badgeId, address indexed to, uint256 amount);
 
   constructor() ERC1155('') {
-    _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    _grantRole(MINTER_ROLE, msg.sender);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
   }
 
   function mint(
@@ -24,6 +23,10 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
     require(balanceOf(account, badgeId) == 0, 'Badge already minted');
     _mint(account, badgeId, amount, data);
     emit BadgeClaimed(badgeId, account, amount);
+  }
+
+  function setMinterRole(address _account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    _grantRole(MINTER_ROLE, _account);
   }
 
   // The following functions are overrides required by Solidity.
