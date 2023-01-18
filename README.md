@@ -1,6 +1,6 @@
-# Sample Hardhat Project
+# Soulbound Badge & Claimer
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project includes Soulbound Badge implementation based on ERC1155. It also includes Role-based access and Claimer contract that is going to mint badges.
 
 Try running some of the following tasks:
 
@@ -9,5 +9,6 @@ npx hardhat help
 npx hardhat test
 REPORT_GAS=true npx hardhat test
 npx hardhat node
-npx hardhat run scripts/deploy.ts
+npx hardhat run scripts/deploy-badge.ts
+npx hardhat run scripts/deploy-minter.ts
 ```
