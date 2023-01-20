@@ -1,7 +1,25 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
-import { TypedDataUtils } from 'ethers-eip712';
+
+async function getSignatureFromSigner(to: string, badgeId: number, verifyingContractAddress: string) {
+  const domain = {
+    name: 'BadgeMinter',
+    version: '1.0.0',
+    chainId: 31337,
+    verifyingContract: verifyingContractAddress,
+  };
+  const types = {
+    Claim: [
+      { name: 'to', type: 'address' },
+      { name: 'badgeId', type: 'uint256' },
+    ],
+  };
+  const value = { to, badgeId };
+  const signer = await ethers.getSigner(to);
+  const signature = await signer._signTypedData(domain, types, value);
+  return signature;
+}
 
 describe('BadgeMinter', function () {
   async function deployBadgeMinter() {
@@ -18,49 +36,6 @@ describe('BadgeMinter', function () {
     await badgeMinter.setSigner(owner.address);
 
     return { badge, badgeMinter, owner, otherAccount };
-  }
-
-  async function getSignatureFromSigner(to: string, badgeId: number, signer: any, verifyingContractAddress: string) {
-    const domain = {
-      name: 'BadgeMinter',
-      version: '1.0.0',
-      chainId: 31337,
-      verifyingContract: verifyingContractAddress,
-    };
-    const types = {
-      Claim: [
-        { name: 'to', type: 'address' },
-        { name: 'badgeId', type: 'uint256' },
-      ],
-    };
-    const value = { to, badgeId };
-
-    const typedData = {
-      types: {
-        EIP712Domain: [
-          { name: 'name', type: 'string' },
-          { name: 'version', type: 'string' },
-          { name: 'chainId', type: 'uint256' },
-          { name: 'verifyingContract', type: 'address' },
-        ],
-        Claim: [
-          { name: 'to', type: 'address' },
-          { name: 'badgeId', type: 'uint256' },
-        ],
-      },
-      primaryType: 'Claim',
-      domain,
-      message: { to, badgeId },
-    };
-
-    const digest = TypedDataUtils.encodeDigest(typedData);
-    const digestHex = ethers.utils.hexlify(digest);
-    console.log('digestHext', digestHex);
-
-    const signature = await signer._signTypedData(domain, types, value);
-    const recoveredAddress = ethers.utils.verifyTypedData(domain, types, value, signature);
-
-    return signature;
   }
 
   it('Should set the right badge contract address', async function () {
@@ -82,7 +57,7 @@ describe('BadgeMinter', function () {
   it('Should claim badge from a Badge contract', async function () {
     const { badgeMinter, owner } = await loadFixture(deployBadgeMinter);
     const badgeId = 123;
-    const signature = await getSignatureFromSigner(owner.address, badgeId, owner, badgeMinter.address);
+    const signature = await getSignatureFromSigner(owner.address, badgeId, badgeMinter.address);
     await badgeMinter.claim(badgeId, signature);
     expect(true).to.equal(true);
   });
