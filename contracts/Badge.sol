@@ -58,7 +58,6 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
   }
 
   function wasPublished(uint256 badgeId) public view returns (bool) {
-    console.log(getIpfsHashByBadgeId(badgeId));
     return keccak256(abi.encodePacked(getIpfsHashByBadgeId(badgeId))) != keccak256(abi.encodePacked(''));
   }
 
@@ -69,11 +68,7 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
   function _publish(address publisher, string memory ipfsHash) private {
     _tokenIds.increment();
     uint256 newTokenId = _tokenIds.current();
-    // owner (160) / Counter Token ID (96)
-    uint256 _badgeId = uint256(uint160(publisher)) *
-      PUBLISHER_OFFSET_MULTIPLIER + // Publisher
-      newTokenId; // Counter Token ID
-    console.log('Badge ID: %s', _badgeId);
+    uint256 _badgeId = newTokenId;
     ipfsHashMap[_badgeId] = ipfsHash;
 
     emit BadgePublished(publisher, _badgeId, ipfsHash);
