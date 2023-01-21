@@ -47,6 +47,7 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
 
   function mint(address account, uint256 badgeId, uint256 amount, bytes memory data) public onlyRole(MINTER_ROLE) {
     require(balanceOf(account, badgeId) == 0, 'Badge already minted');
+    require(wasPublished(badgeId), 'uri: this badge id was never published');
     _mint(account, badgeId, amount, data);
     emit BadgeClaimed(badgeId, account, amount);
   }

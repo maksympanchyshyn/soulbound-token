@@ -26,7 +26,7 @@ describe('BadgeMinter', function () {
     const [owner, otherAccount] = await ethers.getSigners();
 
     const Badge = await ethers.getContractFactory('Badge');
-    const badge = await Badge.deploy();
+    const badge = await Badge.deploy('https://ipfs.infura.io:5001');
 
     const BadgeMinter = await ethers.getContractFactory('BadgeMinter');
     const badgeMinter = await BadgeMinter.deploy();
@@ -54,11 +54,17 @@ describe('BadgeMinter', function () {
     expect(await badge.hasRole(minterRole, badgeMinter.address)).to.equal(true);
   });
 
-  it('Should claim badge from a Badge contract', async function () {
+  it('Should fail if signature is not valid', async function () {
+    const { badgeMinter, otherAccount } = await loadFixture(deployBadgeMinter);
+    const badgeId = 123;
+    const signature = await getSignatureFromSigner(otherAccount.address, badgeId, badgeMinter.address);
+    await expect(badgeMinter.claim(badgeId, signature)).to.be.revertedWith('_verify: invalid signature');
+  });
+
+  it('Should fail if badge was not published', async function () {
     const { badgeMinter, owner } = await loadFixture(deployBadgeMinter);
     const badgeId = 123;
     const signature = await getSignatureFromSigner(owner.address, badgeId, badgeMinter.address);
-    await badgeMinter.claim(badgeId, signature);
-    expect(true).to.equal(true);
+    await expect(badgeMinter.claim(badgeId, signature)).to.be.revertedWith('uri: this badge id was never published');
   });
 });
