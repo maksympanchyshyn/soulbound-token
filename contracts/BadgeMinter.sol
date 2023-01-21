@@ -43,8 +43,6 @@ contract BadgeMinter is AccessControl, EIP712 {
 
   function _verify(bytes32 digest, bytes memory signature) internal virtual {
     address _signer = ECDSA.recover(digest, signature);
-    console.log('recovered signer: %s', _signer);
-    console.log('expected signer: %s', signer);
     require(_signer == signer, '_verify: invalid signature');
     require(_signer != address(0), 'ECDSA: invalid signature');
   }
