@@ -2,7 +2,13 @@
 
 This project includes Soulbound Badge implementation based on ERC1155. It also includes Role-based access and Claimer contract that is going to mint badges.
 
-To start contract tests run following commands:
+Install dependencies:
+
+```shell
+npm install
+```
+
+Start tests:
 
 ```shell
 npx hardhat test
