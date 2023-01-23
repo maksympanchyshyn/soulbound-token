@@ -5,9 +5,11 @@ export async function deployBadge() {
   const [owner, otherAccount] = await ethers.getSigners();
 
   const Badge = await ethers.getContractFactory('Badge');
-  const badge = await Badge.deploy('https://ipfs.infura.io:5001');
+  const badge = await Badge.deploy('https://ipfs.infura.io:5001/');
+
   await badge.setMinterRole(owner.address);
   await badge.setPublisher(owner.address);
+
   return { badge, owner, otherAccount };
 }
 

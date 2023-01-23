@@ -21,8 +21,6 @@ contract Badge is ERC1155, AccessControl, ERC1155Supply {
   bytes32 public constant MINTER_ROLE = keccak256('MINTER_ROLE');
   bytes32 public constant PUBLISHER_ROLE = keccak256('PUBLISHER_ROLE');
 
-  uint256 internal constant PUBLISHER_OFFSET_MULTIPLIER = uint256(2) ** (256 - 160);
-
   constructor(string memory _initUri) ERC1155('') {
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     _uri = _initUri;
