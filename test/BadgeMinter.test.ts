@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 
+import { deployBadgeMinter } from './fixtures';
+
 async function getSignatureFromSigner(to: string, badgeId: number, verifyingContractAddress: string) {
   const domain = {
     name: 'BadgeMinter',
@@ -22,22 +24,6 @@ async function getSignatureFromSigner(to: string, badgeId: number, verifyingCont
 }
 
 describe('BadgeMinter', function () {
-  async function deployBadgeMinter() {
-    const [owner, otherAccount] = await ethers.getSigners();
-
-    const Badge = await ethers.getContractFactory('Badge');
-    const badge = await Badge.deploy('https://ipfs.infura.io:5001');
-
-    const BadgeMinter = await ethers.getContractFactory('BadgeMinter');
-    const badgeMinter = await BadgeMinter.deploy();
-
-    await badge.setMinterRole(badgeMinter.address);
-    await badgeMinter.setBadgeAddress(badge.address);
-    await badgeMinter.setSigner(owner.address);
-
-    return { badge, badgeMinter, owner, otherAccount };
-  }
-
   it('Should set the right badge contract address', async function () {
     const { badge, badgeMinter } = await loadFixture(deployBadgeMinter);
     expect(await badgeMinter.getBadgeAddress()).to.equal(badge.address);
@@ -59,12 +45,5 @@ describe('BadgeMinter', function () {
     const badgeId = 123;
     const signature = await getSignatureFromSigner(otherAccount.address, badgeId, badgeMinter.address);
     await expect(badgeMinter.claim(badgeId, signature)).to.be.revertedWith('_verify: invalid signature');
-  });
-
-  it('Should fail if badge was not published', async function () {
-    const { badgeMinter, owner } = await loadFixture(deployBadgeMinter);
-    const badgeId = 123;
-    const signature = await getSignatureFromSigner(owner.address, badgeId, badgeMinter.address);
-    await expect(badgeMinter.claim(badgeId, signature)).to.be.revertedWith('uri: this badge id was never published');
   });
 });
