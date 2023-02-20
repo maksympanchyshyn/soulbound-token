@@ -15,13 +15,21 @@ const config: HardhatUserConfig = {
     hardhat: {
       chainId: 31337,
     },
+    arbitrumOne: {
+      chainId: 42161,
+      url: process.env.ARBITRUM_ONE_URL || '',
+      accounts: [process.env.PRIVATE_KEY || ''],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: 'USD',
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_API_KEY || '',
+      arbitrumOne: process.env.ARBISCAN_API_KEY || '',
+    },
   },
 };
 
